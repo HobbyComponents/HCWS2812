@@ -1,17 +1,16 @@
-/* FILE:    HCMAX7219.cpp
+/* FILE:    HCMAX7219.h
    DATE:    26/03/15
-   VERSION: 0.1
+   VERSION: 0.2
    AUTHOR:  Andrew Davies
-
+   
 11/03/15 version 0.1: Original version
+13/04/15 version 0.2: Updated timings to work with 1.x.x versions of Arduino IDE
 
 Library for WS2812 serial RGB LEDs.
-
 You may copy, alter and reuse this code in any way you like, but please leave
 reference to HobbyComponents.com in your comments if you redistribute this code.
 This software may not be used directly for the purpose of selling products that
 directly compete with Hobby Components Ltd's own range of products.
-
 THIS SOFTWARE IS PROVIDED "AS IS". HOBBY COMPONENTS MAKES NO WARRANTIES, WHETHER
 EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF
 MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, ACCURACY OR LACK OF NEGLIGENCE.
@@ -39,7 +38,7 @@ REASON WHATSOEVER.
    
 /*****************************************************************************/
   
-  
+#if (ARDUINO < 110) // Settings for older version of Arduino IDE  
 /* Settings for ATMega328P based Arduino's (Uno, Nano etc..) */
 #if defined (__AVR_ATmega328P__)
 #define HIGHDELAYHIGH __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n")
@@ -55,9 +54,9 @@ REASON WHATSOEVER.
 /* Settings for ATMega2560 based Arduino's (Mega) */
 #elif defined (__AVR_ATmega2560__)
 #define HIGHDELAYHIGH __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n")
-#define HIGHDELAYLOW __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n")
+#define HIGHDELAYLOW __asm__ __volatile__ ("nop\n")
 #define LOWDELAYHIGH __asm__ __volatile__ ("nop\n")
-#define LOWDELAYLOW __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n")
+#define LOWDELAYLOW __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n")
 
 /* PIN 8 */
 #define DOUT_PIN 0x20
@@ -67,8 +66,47 @@ REASON WHATSOEVER.
 /* Settings for ATmega32U4 based Arduino's. (Leonardo, 5V Pro Micro, etc..) */
 #elif defined (__AVR_ATmega32U4__)
 #define HIGHDELAYHIGH __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n")
-#define HIGHDELAYLOW __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n")
+#define HIGHDELAYLOW __asm__ __volatile__ ("nop\n nop\n nop\n nop\n")
 #define LOWDELAYHIGH __asm__ __volatile__ ("nop\n nop\n nop\n nop\n")
+#define LOWDELAYLOW __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n")
+
+/* PIN 8 */
+#define DOUT_PIN 0x10
+#define DOUT_PORT PORTB
+#define DOUT_DDR DDRB
+#endif
+
+
+
+#else // Settings for newer version of Arduino IDE (> 1.0.X)
+#if defined (__AVR_ATmega328P__)
+#define HIGHDELAYHIGH __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n nop\n")
+#define HIGHDELAYLOW __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n")
+#define LOWDELAYHIGH __asm__ __volatile__ ("nop\n")
+#define LOWDELAYLOW __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n")
+
+/* PIN 8 */
+#define DOUT_PIN 0x01 
+#define DOUT_PORT PORTB
+#define DOUT_DDR DDRB
+
+/* Settings for ATMega2560 based Arduino's (Mega) */
+#elif defined (__AVR_ATmega2560__)
+#define HIGHDELAYHIGH __asm__ __volatile__ ("nop\n nop\n nop\n nop\n")
+#define HIGHDELAYLOW __asm__ __volatile__ ("nop\n nop\n nop\n")
+#define LOWDELAYHIGH //__asm__ __volatile__ ("")
+#define LOWDELAYLOW __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n")
+
+/* PIN 8 */
+#define DOUT_PIN 0x20
+#define DOUT_PORT PORTH
+#define DOUT_DDR DDRH
+
+/* Settings for ATmega32U4 based Arduino's. (Leonardo, 5V Pro Micro, etc..) */
+#elif defined (__AVR_ATmega32U4__)
+#define HIGHDELAYHIGH __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n nop\n")
+#define HIGHDELAYLOW __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n")
+//#define LOWDELAYHIGH __asm__ __volatile__ ("")
 #define LOWDELAYLOW __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n")
 
 /* PIN 8 */
@@ -76,6 +114,8 @@ REASON WHATSOEVER.
 #define DOUT_PORT PORTB
 #define DOUT_DDR DDRB
 #endif
+#endif
+
 
 
 #define GREEN 0
