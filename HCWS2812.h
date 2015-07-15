@@ -106,7 +106,7 @@ REASON WHATSOEVER.
 #elif defined (__AVR_ATmega32U4__)
 #define HIGHDELAYHIGH __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n nop\n")
 #define HIGHDELAYLOW __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n")
-//#define LOWDELAYHIGH __asm__ __volatile__ ("")
+#define LOWDELAYHIGH __asm__ __volatile__ ("")
 #define LOWDELAYLOW __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n")
 
 /* PIN 8 */
