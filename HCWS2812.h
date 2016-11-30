@@ -1,10 +1,12 @@
 /* FILE:    HCMAX7219.h
-   DATE:    26/03/15
-   VERSION: 0.2
+   DATE:    30/11/16
+   VERSION: 0.3
    AUTHOR:  Andrew Davies
    
 11/03/15 version 0.1: Original version
 13/04/15 version 0.2: Updated timings to work with 1.x.x versions of Arduino IDE
+30/11/16 version 0.3: Updated to support ESP8266
+					  Text font moved to program memory to save ram.
 
 Library for WS2812 serial RGB LEDs.
 You may copy, alter and reuse this code in any way you like, but please leave
@@ -37,6 +39,7 @@ REASON WHATSOEVER.
    #define DOTMATRIX
    
 /*****************************************************************************/
+
   
 #if (ARDUINO < 110) // Settings for older version of Arduino IDE  
 /* Settings for ATMega328P based Arduino's (Uno, Nano etc..) */
@@ -113,6 +116,19 @@ REASON WHATSOEVER.
 #define DOUT_PIN 0x10
 #define DOUT_PORT PORTB
 #define DOUT_DDR DDRB
+
+
+
+#elif defined (ESP8266)
+#define HIGHDELAYHIGH __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n")
+#define HIGHDELAYLOW __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n")
+#define LOWDELAYHIGH __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n")
+#define LOWDELAYLOW __asm__ __volatile__ ("nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n")
+
+/* PIN D2 */
+#define DOUT_PIN D2
+#define DOUT_PORT portOutputRegister(digitalPinToPort(1))
+#define DOUT_DDR portModeRegister(digitalPinToPort(1))
 #endif
 #endif
 
@@ -132,16 +148,24 @@ REASON WHATSOEVER.
 #define BIT1 0x02
 #define BIT0 0x01
 
+
+#if defined (ESP8266)
+#define DOUT_HIGH GPOS = 1<<4
+#define DOUT_LOW GPOC = 1<<4
+
+#else
 /* Sets the digital pin high */
 #define DOUT_HIGH DOUT_PORT |= DOUT_PIN
 /* Sets the digital pin low */
 #define DOUT_LOW DOUT_PORT &= ~DOUT_PIN
+#endif
+
 
 #define DISPLAYBUFFERSIZE NUMBEROFLEDS / 8
 
 /* Font bit map */
 #ifdef DOTMATRIX
-const char Font8x8[][8] = 
+const char Font8x8[][8] PROGMEM = 
 { {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00},
   {0x00,0x00,0x00,0xF2,0xF2,0x00,0x00,0x00},
   {0x00,0xE0,0xE0,0x00,0x00,0xE0,0xE0,0x00},

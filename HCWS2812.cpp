@@ -1,9 +1,12 @@
 /* FILE:    HCMAX7219.cpp
-   DATE:    26/03/15
-   VERSION: 0.1
+   DATE:    30/11/16
+   VERSION: 0.3
    AUTHOR:  Andrew Davies
-
+   
 11/03/15 version 0.1: Original version
+13/04/15 version 0.2: Updated timings to work with 1.x.x versions of Arduino IDE
+30/11/16 version 0.3: Updated to support ESP8266
+					  Text font moved to program memory to save ram.
 
 Library for WS2812 serial RGB LEDs.
 
@@ -30,9 +33,13 @@ byte RGBBuffer[3][NUMBEROFLEDS];
 /* Constructor to initialise the GPIO and library */
 HCWS2812::HCWS2812(void)
 {
-  /* Set data pin to an output */
+  /* If device is ESP8266 set pin D2 */
+  #if defined (ESP8266)
+  pinMode(DOUT_PIN, OUTPUT);
+  #else
+  /* Else if Arduino board set pin D8 to an output */
   DOUT_DDR |= DOUT_PIN;
-  
+  #endif
   /* Clear the output buffer with the selected background colour */
   SetBG(0, 0, 0);
   ClearBuffer();
@@ -208,7 +215,7 @@ void HCWS2812::print(long number, byte decimalPlace, unsigned int Offset)
 	  for(PixelIndex = 0; PixelIndex < 8; PixelIndex++)
 	  {
 		bufferindex--;
-		if((Font8x8[CurCharacter][(charindex%8)] >> PixelIndex) & 0x01)
+		if((pgm_read_byte ( &(Font8x8[CurCharacter][(charindex%8)])) >> PixelIndex) & 0x01)
 		{
 		  RGBBuffer[BLUE][bufferindex] = _FontFGColour[BLUE];
 		  RGBBuffer[RED][bufferindex] = _FontFGColour[RED];
